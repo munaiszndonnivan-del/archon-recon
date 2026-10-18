@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARCHON // Cyber Reconnaissance & Threat Matrix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030712;
+      --panel: #0b1120;
+      --border: #1e293b;
+      --accent: #00ff88;
+      --accent-dim: rgba(0, 255, 136, 0.15);
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #64748b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      padding: 16px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-tag {
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .brand h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+
+    .recon-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .recon-bar input {
+      flex: 1;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    .recon-bar input:focus {
+      border-color: var(--accent);
+    }
+
+    .recon-bar button {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 0 24px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: opacity 0.2s;
+    }
+
+    .recon-bar button:active {
+      opacity: 0.8;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      flex: 1;
+    }
+
+    @media (min-width: 900px) {
+      .grid {
+        grid-template-columns: 360px 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 8px;
+    }
+
+    /* Posture Dial */
+    .score-box {
+      text-align: center;
+      padding: 24px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 16px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .score-value {
+      font-size: 54px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .score-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+    }
+
+    /* Telemetry Table */
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 13px;
+    }
+
+    .telemetry-row span:first-child { color: var(--text-muted); }
+    .telemetry-row span:last-child { font-weight: 600; }
+
+    /* Terminal Output */
+    .terminal {
+      background: #02050b;
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 12px;
+      line-height: 1.7;
+      height: 380px;
+      overflow-y: auto;
+      color: #94a3b8;
+    }
+
+    .log-entry { margin-bottom: 4px; word-break: break-all; }
+    .log-success { color: var(--accent); }
+    .log-alert { color: var(--warning); }
+    .log-danger { color: var(--danger); }
+
+    .download-btn {
+      margin-top: 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .download-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span class="brand-tag">CLASSIFIED // ARCHON v3.4</span>
+      <h1>NATIONAL CYBER RECON MATRIX</h1>
+    </div>
+    <div style="font-size: 12px; color: var(--text-muted);" id="sys-status">SYS_STATUS: READY</div>
+  </header>
+
+  <div class="recon-bar">
+    <input type="text" id="targetInput" placeholder="Enter target infrastructure (e.g., cloudflare.com, kenya.go.ke)..." value="github.com">
+    <button id="scanBtn" onclick="runIntelligenceScan()">Audit Target</button>
+  </div>
+
+  <div class="grid">
+    <!-- Left: Assessment Panel -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>Target Threat Posture</span>
+        <span id="targetName">UNSCANNED</span>
+      </div>
+
+      <div class="score-box">
+        <div class="score-value" id="defenseScore">--</div>
+        <div class="score-label" id="scoreVerdict">NO DIAGNOSTIC ACTIVE</div>
+      </div>
+
+      <div class="telemetry-row">
+        <span>Resolved IPv4 Assets</span>
+        <span id="ipCount">0</span>
+      </div>
+      <div class="telemetry-row">
+        <span>Mail Transport Routing (MX)</span>
+        <span id="mxStatus">Unverified</span>
+      </div>
+      <div class="telemetry-row">
+        <span>SPF Defense Perimeter</span>
+        <span id="spfStatus">Unverified</span>
+      </div>
+      <div class="telemetry-row">
+        <span>DMARC Identity Armor</span>
+        <span id="dmarcStatus">Unverified</span>
+      </div>
+
+      <button class="download-btn" onclick="exportForensicBriefing()">Export Forensic Intelligence Report</button>
+    </div>
+
+    <!-- Right: Operational Terminal Log -->
+    <div class="panel">
+      <div class="panel-title">
+        <span>Live Operational SOC Stream</span>
+        <span>DNS-OVER-HTTPS // VERIFIED</span>
+      </div>
+      <div class="terminal" id="terminalLog">
+        <div class="log-entry log-alert">// INITIALIZING ARCHON RECONNAISSANCE ENGINE...</div>
+        <div class="log-entry">// READY FOR INPUT. ENTER TARGET INFRASTRUCTURE ABOVE TO COMMENCE SCAN.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentLogs = [];
+
+    function log(message, type = '') {
+      const term = document.getElementById('terminalLog');
+      const time = new Date().toISOString().split('T')[1].replace('Z','');
+      const formatted = `[${time}] ${message}`;
+      currentLogs.push(formatted);
+
+      const div = document.createElement('div');
+      div.className = `log-entry ${type}`;
+      div.innerText = formatted;
+      term.appendChild(div);
+      term.scrollTop = term.scrollHeight;
+    }
+
+    async function queryDoH(domain, type) {
+      try {
+        const response = await fetch(`https://cloudflare-dns.com/dns-query?name=${domain}&type=${type}`, {
+          headers: { 'Accept': 'application/dns-json' }
+        });
+        const data = await response.json();
+        return data.Answer || [];
+      } catch (err) {
+        log(`[ERROR] DNS Query failure for ${type} records: ${err.message}`, 'log-danger');
+        return [];
+      }
+    }
+
+    async function runIntelligenceScan() {
+      let target = document.getElementById('targetInput').value.trim();
+      target = target.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
+
+      if (!target) {
+        alert('Please enter a target domain.');
+        return;
+      }
+
+      document.getElementById('sys-status').innerText = 'STATUS: AUDITING SYSTEM...';
+      document.getElementById('sys-status').style.color = '#f59e0b';
+      document.getElementById('targetName').innerText = target.toUpperCase();
+      
+      log(`----------------------------------------------------------------`, '');
+      log(`[OPERATION ENGAGED] Commencing reconnaissance on: ${target}`, 'log-success');
+
+      let score = 50;
+
+      // 1. Resolve IPv4 Addresses (A Records)
+      log(`Querying root DNS records for IPv4 asset allocation...`);
+      const aRecords = await queryDoH(target, 'A');
+      document.getElementById('ipCount').innerText = aRecords.length;
+      if (aRecords.length > 0) {
+        aRecords.forEach(r => log(`  -> Discovered Public Node: ${r.data}`, 'log-alert'));
+        score += 15;
+      } else {
+        log(`  [!] Warning: No public A records resolved.`, 'log-danger');
+      }
+
+      // 2. Resolve MX Records (Mail Infrastructure)
+      log(`Inspecting Mail Exchange (MX) gateways...`);
+      const mxRecords = await queryDoH(target, 'MX');
+      if (mxRecords.length > 0) {
+        document.getElementById('mxStatus').innerText = 'Configured (' + mxRecords.length + ')';
+        document.getElementById('mxStatus').style.color = 'var(--accent)';
+        mxRecords.forEach(r => log(`  -> Mail Gateway: ${r.data}`));
+        score += 10;
+      } else {
+        document.getElementById('mxStatus').innerText = 'None';
+        document.getElementById('mxStatus').style.color = 'var(--text-muted)';
+        log(`  -> Target has no dedicated public MX routers.`);
+      }
+
+      // 3. Inspect TXT Records for SPF & DMARC (Email Spoofing / Phishing Protection)
+      log(`Analyzing cryptographic verification policies (SPF / TXT)...`);
+      const txtRecords = await queryDoH(target, 'TXT');
+      let hasSPF = false;
+      txtRecords.forEach(r => {
+        if (r.data.includes('v=spf1')) {
+          hasSPF = true;
+          log(`  [+] SPF Defense Perimeter Active: ${r.data}`, 'log-success');
+        }
+      });
+
+      if (hasSPF) {
+        document.getElementById('spfStatus').innerText = 'PROTECTED';
+        document.getElementById('spfStatus').style.color = 'var(--accent)';
+        score += 15;
+      } else {
+        document.getElementById('spfStatus').innerText = 'EXPOSED';
+        document.getElementById('spfStatus').style.color = 'var(--danger)';
+        log(`  [-] High Risk: Missing SPF header. Domain is susceptible to identity spoofing.`, 'log-danger');
+      }
+
+      // 4. Query DMARC Policy
+      log(`Probing DMARC policy enforcement on _dmarc.${target}...`);
+      const dmarcRecords = await queryDoH(`_dmarc.${target}`, 'TXT');
+      let hasDMARC = dmarcRecords.some(r => r.data.includes('v=DMARC1'));
+
+      if (hasDMARC) {
+        document.getElementById('dmarcStatus').innerText = 'ENFORCED';
+        document.getElementById('dmarcStatus').style.color = 'var(--accent)';
+        log(`  [+] DMARC Identity Armor Verified.`, 'log-success');
+        score += 10;
+      } else {
+        document.getElementById('dmarcStatus').innerText = 'UNPROTECTED';
+        document.getElementById('dmarcStatus').style.color = 'var(--danger)';
+        log(`  [-] High Risk: Missing DMARC record. Mail relay lacks enforcement rules.`, 'log-danger');
+      }
+
+      // Final Assessment
+      const scoreElem = document.getElementById('defenseScore');
+      const verdictElem = document.getElementById('scoreVerdict');
+
+      scoreElem.innerText = score + '/100';
+      if (score >= 80) {
+        scoreElem.style.color = 'var(--accent)';
+        verdictElem.innerText = 'HARDENED PERIMETER';
+      } else if (score >= 60) {
+        scoreElem.style.color = 'var(--warning)';
+        verdictElem.innerText = 'MODERATE EXPOSURE';
+      } else {
+        scoreElem.style.color = 'var(--danger)';
+        verdictElem.innerText = 'CRITICAL VULNERABILITIES';
+      }
+
+      log(`[AUDIT COMPLETE] Defense Posture Score calculated: ${score}/100`, 'log-success');
+      document.getElementById('sys-status').innerText = 'SYS_STATUS: MONITORING ACTIVE';
+      document.getElementById('sys-status').style.color = 'var(--accent)';
+    }
+
+    function exportForensicBriefing() {
+      const target = document.getElementById('targetName').innerText;
+      if (target === 'UNSCANNED') {
+        alert('Run an audit first before downloading a forensic report.');
+        return;
+      }
+
+      const reportContent = `ARCHON CYBER INTELLIGENCE SYSTEM // FORENSIC REPORT\n` +
+        `TARGET: ${target}\n` +
+        `DATE: ${new Date().toUTCString()}\n` +
+        `POSTURE SCORE: ${document.getElementById('defenseScore').innerText}\n` +
+        `============================================================\n\n` +
+        currentLogs.join('\n');
+
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `ARCHON_REPORT_${target}.txt`;
+      a.click();
+    }
+  </script>
+</body>
+</html>
